@@ -6,7 +6,12 @@ async function initialize() {
 			target: { tabId: tab.id },
 			function: extractColors,
 		},
-		displayColors
+		(results) => {
+			if (results && results[0] && results[0].result) {
+				chrome.storage.local.set({ colorData: results[0].result });
+				displayColors(results);
+			}
+		}
 	);
 }
 
@@ -39,6 +44,10 @@ function updateColorCount(map, color, type) {
 function displayColors(results) {
 	const palette = document.getElementById('colorPalette');
 	palette.innerHTML = '';
+
+	if (!results || !results[0] || !results[0].result) {
+		return;
+	}
 
 	const colors = results[0].result.slice(0, 5);
 	colors.forEach(([color, data]) => {

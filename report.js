@@ -5,18 +5,10 @@ document.getElementById('sortOrder').addEventListener('change', (e) => {
 });
 
 async function initialize() {
-	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-
-	chrome.scripting.executeScript(
-		{
-			target: { tabId: tab.id },
-			function: extractColors,
-		},
-		(results) => {
-			colorData = results[0].result;
-			sortAndDisplayColors('most-used');
-		}
-	);
+	chrome.storage.local.get(['colorData'], (result) => {
+		colorData = result.colorData || [];
+		sortAndDisplayColors('most-used');
+	});
 }
 
 function sortAndDisplayColors(sortType) {
@@ -96,3 +88,29 @@ function getColorName(rgb) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initialize);
+
+function extractColors() {
+	const elements = document.querySelectorAll('*');
+	const colorMap = new Map();
+
+	elements.forEach((element) => {
+		const styles = window.getComputedStyle(element);
+		updateColorCount(colorMap, styles.backgroundColor, 'background');
+		updateColorCount(colorMap, styles.color, 'text');
+	});
+
+	return Array.from(colorMap.entries())
+		.filter(
+			([color]) => color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)'
+		)
+		.sort((a, b) => b[1].count - a[1].count);
+}
+
+function updateColorCount(map, color, type) {
+	if (!map.has(color)) {
+		map.set(color, { count: 0, types: new Set() });
+	}
+	const data = map.get(color);
+	data.count++;
+	data.types.add(type);
+}
