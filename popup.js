@@ -70,7 +70,7 @@ function displayColors(results) {
 		return;
 	}
 
-	const colors = results[0].result.slice(0, 5);
+	const colors = results[0].result.slice(0, 5); // Only take top 5 colors
 	colors.forEach(([color, data]) => {
 		const colorBar = document.createElement('div');
 		colorBar.className = 'color-bar';
@@ -78,6 +78,8 @@ function displayColors(results) {
 
 		const hexValue = document.createElement('div');
 		hexValue.className = 'color-hex';
+		// Set text color to black for light colors
+		hexValue.style.color = isLightColor(color) ? 'black' : 'white';
 		hexValue.textContent = rgbToHex(color);
 
 		colorBar.appendChild(hexValue);
@@ -85,6 +87,13 @@ function displayColors(results) {
 	});
 }
 
+function isLightColor(color) {
+	const rgb = color.match(/\d+/g);
+	if (!rgb) return false;
+	// Calculate relative luminance
+	const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+	return luminance > 0.5;
+}
 document.getElementById('showDetailedReport').addEventListener('click', () => {
 	chrome.tabs.create({ url: 'report.html' });
 });

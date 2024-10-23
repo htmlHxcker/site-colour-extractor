@@ -39,6 +39,7 @@ function displayColorGrid(colors) {
 		const colorItem = document.createElement('div');
 		colorItem.className = 'color-item';
 		colorItem.style.backgroundColor = color;
+		colorItem.style.color = isLightColor(color) ? 'black' : 'white';
 		colorItem.addEventListener('click', () => showColorDetails(color));
 		grid.appendChild(colorItem);
 	});
