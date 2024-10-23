@@ -1,37 +1,84 @@
 async function initialize() {
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+	console.log('Current tab:', tab);
 
-	chrome.scripting.executeScript(
-		{
+	chrome.scripting
+		.executeScript({
 			target: { tabId: tab.id },
-			function: extractColors,
-		},
-		(results) => {
+			func: () => {
+				console.log('Starting color extraction');
+				const elements = document.querySelectorAll('*');
+				console.log('Found elements:', elements.length);
+
+				const colorMap = new Map();
+
+				elements.forEach((element) => {
+					const styles = window.getComputedStyle(element);
+					const bgColor = styles.backgroundColor;
+					const textColor = styles.color;
+
+					if (bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
+						if (!colorMap.has(bgColor)) {
+							colorMap.set(bgColor, { count: 0, types: new Set() });
+						}
+						const data = colorMap.get(bgColor);
+						data.count++;
+						data.types.add('background');
+					}
+					if (textColor !== 'transparent' && textColor !== 'rgba(0, 0, 0, 0)') {
+						if (!colorMap.has(textColor)) {
+							colorMap.set(textColor, { count: 0, types: new Set() });
+						}
+						const data = colorMap.get(textColor);
+						data.count++;
+						data.types.add('text');
+					}
+				});
+
+				return Array.from(colorMap.entries()).sort(
+					(a, b) => b[1].count - a[1].count
+				);
+			},
+			world: 'MAIN',
+		})
+		.then((results) => {
+			console.log('Extraction results:', results);
 			if (results && results[0] && results[0].result) {
 				chrome.storage.local.set({ colorData: results[0].result });
 				displayColors(results);
 			}
-		}
-	);
+		});
 }
 
-function extractColors() {
-	const elements = document.querySelectorAll('*');
-	const colorMap = new Map();
+// function extractColors() {
+// 	console.log('Starting color extraction');
+// 	const elements = document.querySelectorAll('*');
+// 	console.log('Found elements:', elements.length);
 
-	elements.forEach((element) => {
-		const styles = window.getComputedStyle(element);
-		updateColorCount(colorMap, styles.backgroundColor, 'background');
-		updateColorCount(colorMap, styles.color, 'text');
-	});
+// 	const colorMap = new Map();
 
-	return Array.from(colorMap.entries())
-		.filter(
-			([color]) => color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)'
-		)
-		.sort((a, b) => b[1].count - a[1].count);
-}
+// 	elements.forEach((element) => {
+// 		const styles = window.getComputedStyle(element);
+// 		const bgColor = styles.backgroundColor;
+// 		const textColor = styles.color;
 
+// 		if (bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
+// 			updateColorCount(colorMap, bgColor, 'background');
+// 		}
+// 		if (textColor !== 'transparent' && textColor !== 'rgba(0, 0, 0, 0)') {
+// 			updateColorCount(colorMap, textColor, 'text');
+// 		}
+// 	});
+
+// 	console.log('Color map:', colorMap);
+
+// 	const sortedColors = Array.from(colorMap.entries()).sort(
+// 		(a, b) => b[1].count - a[1].count
+// 	);
+
+// 	console.log('Sorted colors:', sortedColors);
+// 	return sortedColors;
+// }
 function updateColorCount(map, color, type) {
 	if (!map.has(color)) {
 		map.set(color, { count: 0, types: new Set() });
