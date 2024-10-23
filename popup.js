@@ -1,4 +1,4 @@
-document.getElementById('extractColors').addEventListener('click', async () => {
+async function initialize() {
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
 	chrome.scripting.executeScript(
@@ -8,39 +8,61 @@ document.getElementById('extractColors').addEventListener('click', async () => {
 		},
 		displayColors
 	);
-});
+}
 
 function extractColors() {
 	const elements = document.querySelectorAll('*');
-	const colors = new Set();
+	const colorMap = new Map();
 
 	elements.forEach((element) => {
 		const styles = window.getComputedStyle(element);
-		colors.add(styles.backgroundColor);
-		colors.add(styles.color);
-		colors.add(styles.borderColor);
+		updateColorCount(colorMap, styles.backgroundColor, 'background');
+		updateColorCount(colorMap, styles.color, 'text');
 	});
 
-	return Array.from(colors)
-		.filter((color) => color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)')
-		.slice(0, 10);
+	return Array.from(colorMap.entries())
+		.filter(
+			([color]) => color !== 'transparent' && color !== 'rgba(0, 0, 0, 0)'
+		)
+		.sort((a, b) => b[1].count - a[1].count);
+}
+
+function updateColorCount(map, color, type) {
+	if (!map.has(color)) {
+		map.set(color, { count: 0, types: new Set() });
+	}
+	const data = map.get(color);
+	data.count++;
+	data.types.add(type);
 }
 
 function displayColors(results) {
 	const palette = document.getElementById('colorPalette');
 	palette.innerHTML = '';
 
-	const colors = results[0].result;
-	colors.forEach((color) => {
-		const colorBox = document.createElement('div');
-		colorBox.className = 'color-box';
-		colorBox.style.backgroundColor = color;
+	const colors = results[0].result.slice(0, 5);
+	colors.forEach(([color, data]) => {
+		const colorBar = document.createElement('div');
+		colorBar.className = 'color-bar';
+		colorBar.style.backgroundColor = color;
 
 		const hexValue = document.createElement('div');
 		hexValue.className = 'color-hex';
-		hexValue.textContent = color;
+		hexValue.textContent = rgbToHex(color);
 
-		colorBox.appendChild(hexValue);
-		palette.appendChild(colorBox);
+		colorBar.appendChild(hexValue);
+		palette.appendChild(colorBar);
 	});
 }
+
+document.getElementById('showDetailedReport').addEventListener('click', () => {
+	chrome.tabs.create({ url: 'report.html' });
+});
+
+function rgbToHex(rgb) {
+	// Convert RGB to Hex implementation
+	return rgb; // Placeholder
+}
+
+// Initialize on popup load
+document.addEventListener('DOMContentLoaded', initialize);
