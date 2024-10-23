@@ -56,3 +56,11 @@ function rgbToHsl(rgb) {
 		l * 100
 	)}%)`;
 }
+
+async function getColorDetails(color) {
+	const hexColor = rgbToHex(color).replace('#', '');
+	const response = await fetch(
+		`https://www.thecolorapi.com/id?hex=${hexColor}`
+	);
+	return response.json();
+}

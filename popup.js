@@ -91,10 +91,5 @@ document.getElementById('showDetailedReport').addEventListener('click', () => {
 	chrome.tabs.create({ url: 'report.html' });
 });
 
-function rgbToHex(rgb) {
-	// Convert RGB to Hex implementation
-	return rgb; // Placeholder
-}
-
 // Initialize on popup load
 document.addEventListener('DOMContentLoaded', initialize);
