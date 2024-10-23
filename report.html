@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Detailed Color Palette</title>
+		<link rel="stylesheet" href="report.css" />
+	</head>
+	<body>
+		<div class="controls">
+			<select id="sortOrder">
+				<option value="most-used">Most Used First</option>
+				<option value="least-used">Least Used First</option>
+				<option value="background">Background Colors Only</option>
+				<option value="text">Text Colors Only</option>
+			</select>
+		</div>
+
+		<div id="colorGrid"></div>
+
+		<div id="colorDetails" class="color-details">
+			<div class="details-content">
+				<h2>Color Details</h2>
+				<div class="color-preview"></div>
+				<div class="color-info"></div>
+			</div>
+		</div>
+
+		<script src="report.js"></script>
+	</body>
+</html>
