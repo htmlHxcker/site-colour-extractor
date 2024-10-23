@@ -45,46 +45,55 @@ function displayColorGrid(colors) {
 	});
 }
 
-function showColorDetails(color) {
+async function showColorDetails(color) {
 	const details = document.getElementById('colorDetails');
 	const preview = details.querySelector('.color-preview');
 	const info = details.querySelector('.color-info');
 
 	preview.style.backgroundColor = color;
 
-	info.innerHTML = `
-    <div>
-      <h3>HEX</h3>
-      <p>${rgbToHex(color)}</p>
-    </div>
-    <div>
-      <h3>RGB</h3>
-      <p>${color}</p>
-    </div>
-    <div>
-      <h3>HSL</h3>
-      <p>${rgbToHsl(color)}</p>
-    </div>
-    <div>
-      <h3>Name</h3>
-      <p>${getColorName(color)}</p>
-    </div>
-  `;
+	try {
+		const colorData = await getColorDetails(color);
+		info.innerHTML = `
+      <div>
+        <h3>Name</h3>
+        <p>${colorData.name.value}</p>
+      </div>
+      <div>
+        <h3>HEX</h3>
+        <p>${colorData.hex.value}</p>
+      </div>
+      <div>
+        <h3>RGB</h3>
+        <p>${colorData.rgb.value}</p>
+      </div>
+      <div>
+        <h3>HSL</h3>
+        <p>${colorData.hsl.value}</p>
+      </div>
+      <div>
+        <h3>CMYK</h3>
+        <p>${colorData.cmyk.value}</p>
+      </div>
+    `;
+	} catch (error) {
+		info.innerHTML = `
+      <div>
+        <h3>HEX</h3>
+        <p>${rgbToHex(color)}</p>
+      </div>
+	  <div>
+        <h3>HSL</h3>
+        <p>${rgbToHsl(color)}</p>
+      </div>
+      <div>
+        <h3>RGB</h3>
+        <p>${color}</p>
+      </div>
+    `;
+	}
 
 	details.classList.add('active');
-}
-
-// Helper functions for color conversions
-function rgbToHex(rgb) {
-	// Implementation
-}
-
-function rgbToHsl(rgb) {
-	// Implementation
-}
-
-function getColorName(rgb) {
-	// Implementation using a color naming library or API
 }
 
 // Initialize on page load
