@@ -1,6 +1,6 @@
 async function initialize() {
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-	'Current tab:', tab;
+	const siteUrl = new URL(tab.url).hostname;
 
 	chrome.scripting
 		.executeScript({
@@ -9,10 +9,7 @@ async function initialize() {
 			world: 'MAIN',
 		})
 		.then((results) => {
-			'Extraction results:', results;
 			if (results && results[0] && results[0].result) {
-				'Original color data with Sets:', results[0].result;
-
 				const colorDataForStorage = results[0].result.map(([color, data]) => [
 					color,
 					{
@@ -20,9 +17,12 @@ async function initialize() {
 						types: Array.from(data.types),
 					},
 				]);
-				'Converted color data for storage:', colorDataForStorage;
 
-				chrome.storage.local.set({ colorData: colorDataForStorage });
+				chrome.storage.local.set({
+					colorData: colorDataForStorage,
+					siteUrl: siteUrl,
+				});
+
 				displayColors(results);
 			}
 		});

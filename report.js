@@ -5,9 +5,7 @@ document.getElementById('sortOrder').addEventListener('change', (e) => {
 });
 
 async function initialize() {
-	chrome.storage.local.get(['colorData'], (result) => {
-		'Retrieved color data from storage:', result.colorData;
-
+	chrome.storage.local.get(['colorData', 'siteUrl'], (result) => {
 		if (result.colorData) {
 			colorData = result.colorData.map(([color, data]) => [
 				color,
@@ -16,7 +14,13 @@ async function initialize() {
 					types: new Set(data.types),
 				},
 			]);
-			'Converted color data with Sets:', colorData;
+
+			const heading = document.createElement('h1');
+			heading.textContent = `Color palette extracted from ${result.siteUrl}`;
+			heading.className = 'site-heading';
+			document
+				.querySelector('.controls')
+				.insertAdjacentElement('beforebegin', heading);
 			sortAndDisplayColors('most-used');
 		}
 	});
