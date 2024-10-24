@@ -12,6 +12,20 @@
 				<option value="background">Background Colors Only</option>
 				<option value="text">Text Colors Only</option>
 			</select>
+			<select id="exportFormat">
+				<option value="">Export As...</option>
+				<optgroup label="Code">
+					<option value="css">CSS Variables</option>
+					<option value="scss">SCSS Variables</option>
+					<option value="tailwind">Tailwind Config</option>
+					<option value="json">JSON</option>
+				</optgroup>
+				<optgroup label="Design">
+					<option value="pdf">PDF Document</option>
+					<option value="png">PNG Image</option>
+					<option value="ase">Adobe Swatch (ASE)</option>
+				</optgroup>
+			</select>
 		</div>
 
 		<div id="colorGrid"></div>
@@ -25,7 +39,11 @@
 				<div class="color-info"></div>
 			</div>
 		</div>
+
+		<script src="lib/jspdf.umd.min.js"></script>
+		<script src="lib/html2canvas.min.js"></script>
 		<script src="utils.js"></script>
+		<script src="exporters.js"></script>
 		<script src="report.js"></script>
 	</body>
 </html>
