@@ -1,27 +1,37 @@
 async function initialize() {
 	const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-	console.log('Current tab:', tab);
+	'Current tab:', tab;
 
 	chrome.scripting
 		.executeScript({
 			target: { tabId: tab.id },
-
 			func: extractColors,
 			world: 'MAIN',
 		})
 		.then((results) => {
-			console.log('Extraction results:', results);
+			'Extraction results:', results;
 			if (results && results[0] && results[0].result) {
-				chrome.storage.local.set({ colorData: results[0].result });
+				'Original color data with Sets:', results[0].result;
+
+				const colorDataForStorage = results[0].result.map(([color, data]) => [
+					color,
+					{
+						count: data.count,
+						types: Array.from(data.types),
+					},
+				]);
+				'Converted color data for storage:', colorDataForStorage;
+
+				chrome.storage.local.set({ colorData: colorDataForStorage });
 				displayColors(results);
 			}
 		});
 }
 
 function extractColors() {
-	console.log('Starting color extraction');
+	('Starting color extraction');
 	const elements = document.querySelectorAll('*');
-	console.log('Found elements:', elements.length);
+	'Found elements:', elements.length;
 
 	const colorMap = new Map();
 
@@ -47,21 +57,19 @@ function extractColors() {
 		}
 	});
 
-	const sortedColors = Array.from(colorMap.entries()).sort(
-		(a, b) => b[1].count - a[1].count
-	);
-	console.log('Sorted colors:', sortedColors);
+	// Convert Sets to Arrays before returning
+	const serializable = Array.from(colorMap.entries()).map(([color, data]) => [
+		color,
+		{
+			count: data.count,
+			types: Array.from(data.types),
+		},
+	]);
+
+	const sortedColors = serializable.sort((a, b) => b[1].count - a[1].count);
+	'Sorted colors:', sortedColors;
 	return sortedColors;
 }
-function updateColorCount(map, color, type) {
-	if (!map.has(color)) {
-		map.set(color, { count: 0, types: new Set() });
-	}
-	const data = map.get(color);
-	data.count++;
-	data.types.add(type);
-}
-
 function displayColors(results) {
 	const palette = document.getElementById('colorPalette');
 	palette.innerHTML = '';

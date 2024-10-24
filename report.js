@@ -6,11 +6,21 @@ document.getElementById('sortOrder').addEventListener('change', (e) => {
 
 async function initialize() {
 	chrome.storage.local.get(['colorData'], (result) => {
-		colorData = result.colorData || [];
-		sortAndDisplayColors('most-used');
+		'Retrieved color data from storage:', result.colorData;
+
+		if (result.colorData) {
+			colorData = result.colorData.map(([color, data]) => [
+				color,
+				{
+					count: data.count,
+					types: new Set(data.types),
+				},
+			]);
+			'Converted color data with Sets:', colorData;
+			sortAndDisplayColors('most-used');
+		}
 	});
 }
-
 function sortAndDisplayColors(sortType) {
 	let sortedColors = [...colorData];
 
@@ -30,7 +40,6 @@ function sortAndDisplayColors(sortType) {
 
 	displayColorGrid(sortedColors);
 }
-
 function displayColorGrid(colors) {
 	const grid = document.getElementById('colorGrid');
 	grid.innerHTML = '';
@@ -124,3 +133,7 @@ function updateColorCount(map, color, type) {
 	data.count++;
 	data.types.add(type);
 }
+
+document.getElementById('closeDetails').addEventListener('click', () => {
+	document.getElementById('colorDetails').classList.remove('active');
+});
