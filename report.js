@@ -137,3 +137,11 @@ function updateColorCount(map, color, type) {
 document.getElementById('closeDetails').addEventListener('click', () => {
 	document.getElementById('colorDetails').classList.remove('active');
 });
+
+document.getElementById('exportFormat').addEventListener('change', (e) => {
+	const format = e.target.value;
+	if (!format) return;
+
+	exporters[format](colorData);
+	e.target.value = '';
+});
