@@ -13,7 +13,7 @@ export color schemes from any website. It identifies both background and text
 colors, shows their usage frequency, and exports them in various formats
 suitable for different workflows.
 
-<img src="screenshots/popup.png" alt="Extension Popup">
+<img src="screenshots/reports.png" alt="Extension Popup">
 
 ### Features
 
