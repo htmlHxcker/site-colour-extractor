@@ -36,11 +36,6 @@ suitable for different workflows.
    ```sh
    git clone https://github.com/htmlHxcker/site-colour-extractor.git
    ```
-
-```
-
-```
-
 2. Open Chrome and navigate to chrome://extensions/
 3. Enable "Developer mode"
 4. Click "Load unpacked" and select the extension directory
