@@ -34,6 +34,18 @@
 	transform: scale(1.05);
 }
 
+.hex-label {
+	position: absolute;
+	bottom: 8px;
+	left: 8px;
+	font-family: monospace;
+	font-size: 14px;
+}
+
+.color-item {
+	position: relative;
+}
+
 .color-details {
 	position: fixed;
 	bottom: -100%;
