@@ -3,7 +3,7 @@
 <div align="center">
   <h1>Site Color Palette Extractor</h1>
   <p>A Chrome extension that extracts and analyzes color palettes from any website.</p>
-  <a href="[Chrome Web Store Link]">Download on Chrome Web Store</a>
+  <a href="https://chromewebstore.google.com/detail/site-color-palette-extrac/anppkchfheboehadjffljijfkblldnpp">Download on Chrome Web Store</a>
 </div>
 
 ## About The Project
